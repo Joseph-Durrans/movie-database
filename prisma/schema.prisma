@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Generator
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Datasource
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.sqlite"
+}
+
+// Cover
+model Cover {
+  id        Int      @id @default(autoincrement())
+  url       String
+  alt       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Movie     Movie[]
+}
+
+// Movies
+model Movie {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?
+  director    String?
+  year        Int?
+  cover       Cover?       @relation(fields: [coverId], references: [id])
+  coverId     Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  MovieGenre  MovieGenre[]
+}
+
+// Genres
+model Genre {
+  id         Int          @id @default(autoincrement())
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  MovieGenre MovieGenre[]
+}
+
+// Movies & Genres
+model MovieGenre {
+  movie     Movie    @relation(fields: [movieId], references: [id])
+  movieId   Int
+  genre     Genre    @relation(fields: [genreId], references: [id])
+  genreId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([movieId, genreId])
+}
