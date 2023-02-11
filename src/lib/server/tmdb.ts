@@ -11,16 +11,6 @@
 // 		);
 
 // 		return res.json();
-
-// 		const { results }: any = res.json();
-
-// 		for (const movie of results) {
-// 			prisma.movie.create({
-//                 data: {
-
-//                 }
-//             });
-// 		}
 // 	} catch (error) {
 // 		return fail(500, { message: "Could not fetch movies from the API." });
 // 	}
