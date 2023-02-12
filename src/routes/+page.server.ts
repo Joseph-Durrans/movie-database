@@ -1,141 +1,57 @@
+import prisma from "$lib/server/prisma";
+import type { Cover } from "@prisma/client";
+import { writeFileSync } from "fs";
 import type { Actions } from "./$types";
 
 export const actions: Actions = {
 	createCover: async ({ request }) => {
-		const { url, alt } = Object.fromEntries(await request.formData()) as {
-			url: string;
-			alt: string;
-		};
-
-		prisma.cover.create({
-			data: {
-				url,
-				alt,
-			},
-		});
-	},
-	createMovie: async ({ request }) => {
-		const { title, description, director, year, coverId } =
-			Object.fromEntries(await request.formData()) as {
-				title: string;
-				description: string;
-				director: string;
-				year: string;
-				coverId: string;
+		try {
+			// Get the form data from the request
+			const { name, alt, base64 } = Object.fromEntries(
+				await request.formData()
+			) as {
+				name: string;
+				alt: string;
+				base64: string;
 			};
 
-		prisma.movie.create({
-			data: {
-				title,
-				description,
-				director,
-				year: parseInt(year),
-				coverId: parseInt(coverId),
-			},
-		});
-	},
-	createGenre: async ({ request }) => {
-		const { name } = Object.fromEntries(await request.formData()) as {
-			name: string;
-		};
+			// Create the full url
+			let url = `uploads/${name}`;
 
-		prisma.genre.create({
-			data: {
-				name,
-			},
-		});
-	},
-	createMovieGenre: async ({ request }) => {
-		const { movieId, genreId } = Object.fromEntries(
-			await request.formData()
-		) as {
-			movieId: string;
-			genreId: string;
-		};
+			// Check if the cover already exists
+			let duplicates: Cover | null;
+			let duplicateCount = 0;
 
-		prisma.movieGenre.create({
-			data: {
-				movieId: parseInt(movieId),
-				genreId: parseInt(genreId),
-			},
-		});
-	},
-	createActor: async ({ request }) => {
-		const { name } = Object.fromEntries(await request.formData()) as {
-			name: string;
-		};
+			do {
+				duplicates = await prisma.cover.findUnique({
+					where: {
+						url,
+					},
+				});
 
-		prisma.actor.create({
-			data: {
-				name,
-			},
-		});
-	},
-	createMovieActor: async ({ request }) => {
-		const { movieId, actorId } = Object.fromEntries(
-			await request.formData()
-		) as {
-			movieId: string;
-			actorId: string;
-		};
+				if (duplicates) {
+					url = `uploads/${name} (${++duplicateCount})`;
+				}
+			} while (duplicates);
 
-		prisma.movieActor.create({
-			data: {
-				movieId: parseInt(movieId),
-				actorId: parseInt(actorId),
-			},
-		});
-	},
-	createDirector: async ({ request }) => {
-		const { name } = Object.fromEntries(await request.formData()) as {
-			name: string;
-		};
+			// Remove the base64 string header
+			const base64WithoutHeader = base64.split(",")[1];
 
-		prisma.director.create({
-			data: {
-				name,
-			},
-		});
-	},
-	createMovieDirector: async ({ request }) => {
-		const { movieId, directorId } = Object.fromEntries(
-			await request.formData()
-		) as {
-			movieId: string;
-			directorId: string;
-		};
+			// Write the file to the uploads folder
+			writeFileSync(`static/${url}`, base64WithoutHeader, "base64");
 
-		prisma.movieDirector.create({
-			data: {
-				movieId: parseInt(movieId),
-				directorId: parseInt(directorId),
-			},
-		});
-	},
-	createCrewMemeber: async ({ request }) => {
-		const { name } = Object.fromEntries(await request.formData()) as {
-			name: string;
-		};
-
-		prisma.crewMember.create({
-			data: {
-				name,
-			},
-		});
-	},
-	createMovieCrewMember: async ({ request }) => {
-		const { movieId, crewMemberId } = Object.fromEntries(
-			await request.formData()
-		) as {
-			movieId: string;
-			crewMemberId: string;
-		};
-
-		prisma.movieCrewMember.create({
-			data: {
-				movieId: parseInt(movieId),
-				crewMemberId: parseInt(crewMemberId),
-			},
-		});
+			// Create the cover in the database
+			await prisma.cover.create({
+				data: {
+					url,
+					alt,
+				},
+			});
+		} catch (error: any) {
+			// Throw an error
+			throw error(500, {
+				message: "Could not create the cover.",
+			});
+		}
 	},
 };

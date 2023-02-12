@@ -1,29 +1,26 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
-// ERD Generator 
 generator erd {
   provider = "prisma-erd-generator"
   theme    = "neutral"
 }
 
-// Datasource
 datasource db {
   provider = "sqlite"
   url      = "file:./dev.sqlite"
 }
 
-// Cover
 model Cover {
   id        Int      @id @default(autoincrement())
-  url       String
+  url       String   @unique
   alt       String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Movie     Movie[]
 }
 
-// Movies
 model Movie {
   id              Int               @id @default(autoincrement())
   title           String
@@ -33,17 +30,16 @@ model Movie {
   year            Int?
   budget          Int?
   revenue         Int?
-  cover           Cover?            @relation(fields: [coverId], references: [id])
   coverId         Int
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  MovieGenre      MovieGenre[]
+  cover           Cover             @relation(fields: [coverId], references: [id])
   MovieActor      MovieActor[]
-  MovieDirector   MovieDirector[]
   MovieCrewMember MovieCrewMember[]
+  MovieDirector   MovieDirector[]
+  MovieGenre      MovieGenre[]
 }
 
-// Genres
 model Genre {
   id         Int          @id @default(autoincrement())
   name       String
@@ -52,19 +48,17 @@ model Genre {
   MovieGenre MovieGenre[]
 }
 
-// Movies & Genres
 model MovieGenre {
-  movie     Movie    @relation(fields: [movieId], references: [id])
   movieId   Int
-  genre     Genre    @relation(fields: [genreId], references: [id])
   genreId   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  genre     Genre    @relation(fields: [genreId], references: [id])
+  movie     Movie    @relation(fields: [movieId], references: [id])
 
   @@id([movieId, genreId])
 }
 
-// Actors
 model Actor {
   id         Int          @id @default(autoincrement())
   name       String
@@ -73,19 +67,17 @@ model Actor {
   MovieActor MovieActor[]
 }
 
-// Movies & Actors
 model MovieActor {
-  movie     Movie    @relation(fields: [movieId], references: [id])
   movieId   Int
-  actor     Actor    @relation(fields: [actorId], references: [id])
   actorId   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  actor     Actor    @relation(fields: [actorId], references: [id])
+  movie     Movie    @relation(fields: [movieId], references: [id])
 
   @@id([movieId, actorId])
 }
 
-// Directors
 model Director {
   id            Int             @id @default(autoincrement())
   name          String
@@ -94,19 +86,17 @@ model Director {
   MovieDirector MovieDirector[]
 }
 
-// Movies & Directors
 model MovieDirector {
-  movie      Movie    @relation(fields: [movieId], references: [id])
   movieId    Int
-  director   Director @relation(fields: [directorId], references: [id])
   directorId Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  director   Director @relation(fields: [directorId], references: [id])
+  movie      Movie    @relation(fields: [movieId], references: [id])
 
   @@id([movieId, directorId])
 }
 
-// Crew Members
 model CrewMember {
   id              Int               @id @default(autoincrement())
   name            String
@@ -115,14 +105,13 @@ model CrewMember {
   MovieCrewMember MovieCrewMember[]
 }
 
-// Movies & Crew Members
 model MovieCrewMember {
-  movie        Movie      @relation(fields: [movieId], references: [id])
   movieId      Int
-  crewMember   CrewMember @relation(fields: [crewMemberId], references: [id])
   crewMemberId Int
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  crewMember   CrewMember @relation(fields: [crewMemberId], references: [id])
+  movie        Movie      @relation(fields: [movieId], references: [id])
 
   @@id([movieId, crewMemberId])
 }

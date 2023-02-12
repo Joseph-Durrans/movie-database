@@ -1,65 +1,59 @@
 // @ts-nocheck
+import prisma from "$lib/server/prisma";
+import type { Cover } from "@prisma/client";
+import { writeFileSync } from "fs";
 import type { Actions } from "./$types";
 
 export const actions = {
-	createMovie: async ({ request }: import('./$types').RequestEvent) => {
-		const { title, description, director, year, coverId } =
-			Object.fromEntries(await request.formData()) as {
-				title: string;
-				description: string;
-				director: string;
-				year: string;
-				coverId: string;
+	createCover: async ({ request }: import('./$types').RequestEvent) => {
+		try {
+			// Get the form data from the request
+			const { name, alt, base64 } = Object.fromEntries(
+				await request.formData()
+			) as {
+				name: string;
+				alt: string;
+				base64: string;
 			};
 
-		prisma.movie.create({
-			data: {
-				title,
-				description,
-				director,
-				year: parseInt(year),
-				coverId: parseInt(coverId),
-			},
-		});
-	},
-	createGenre: async ({ request }: import('./$types').RequestEvent) => {
-		const { name } = Object.fromEntries(await request.formData()) as {
-			name: string;
-		};
+			// Create the full url
+			let url = `uploads/${name}`;
 
-		prisma.genre.create({
-			data: {
-				name,
-			},
-		});
-	},
-	createMovieGenre: async ({ request }: import('./$types').RequestEvent) => {
-		const { movieId, genreId } = Object.fromEntries(
-			await request.formData()
-		) as {
-			movieId: string;
-			genreId: string;
-		};
+			// Check if the cover already exists
+			let duplicates: Cover | null;
+			let duplicateCount = 0;
 
-		prisma.movieGenre.create({
-			data: {
-				movieId: parseInt(movieId),
-				genreId: parseInt(genreId),
-			},
-		});
-	},
-	createCover: async ({ request }: import('./$types').RequestEvent) => {
-		const { url, alt } = Object.fromEntries(await request.formData()) as {
-			url: string;
-			alt: string;
-		};
+			do {
+				duplicates = await prisma.cover.findUnique({
+					where: {
+						url,
+					},
+				});
 
-		prisma.cover.create({
-			data: {
-				url,
-				alt,
-			},
-		});
+				if (duplicates) {
+					url = `uploads/${name} (${++duplicateCount})`;
+				}
+			} while (duplicates);
+
+			// Remove the base64 string header
+			const base64WithoutHeader = base64.split(",")[1];
+
+			// Write the file to the uploads folder
+			writeFileSync(`static/${url}`, base64WithoutHeader, "base64");
+
+			// Create the cover in the database
+			await prisma.cover.create({
+				data: {
+					url,
+					alt,
+				},
+			});
+		} catch (error: any) {
+			// Throw an error
+			throw error(500, {
+				message: "Could not create the cover.",
+			});
+		}
 	},
 };
 ;null as any as Actions;
