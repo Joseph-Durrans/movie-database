@@ -13,6 +13,7 @@
 </script>
 
 <!-- Form to upload a cover photo with alt text. -->
+<!-- Add enctype="multipart/form-data" when refactoring -->
 <form 
     action="?/createCover" 
     method="post"

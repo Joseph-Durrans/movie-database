@@ -42,7 +42,7 @@ model Movie {
 
 model Genre {
   id         Int          @id @default(autoincrement())
-  name       String
+  name       String       @unique
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   MovieGenre MovieGenre[]
@@ -61,7 +61,7 @@ model MovieGenre {
 
 model Actor {
   id         Int          @id @default(autoincrement())
-  name       String
+  name       String       @unique
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   MovieActor MovieActor[]
@@ -80,7 +80,7 @@ model MovieActor {
 
 model Director {
   id            Int             @id @default(autoincrement())
-  name          String
+  name          String          @unique
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   MovieDirector MovieDirector[]
@@ -99,7 +99,7 @@ model MovieDirector {
 
 model CrewMember {
   id              Int               @id @default(autoincrement())
-  name            String
+  name            String            @unique
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   MovieCrewMember MovieCrewMember[]
