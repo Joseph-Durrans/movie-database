@@ -12,14 +12,14 @@ datasource db {
   url      = "file:./dev.sqlite"
 }
 
-model Cover {
-  id        Int      @id @default(autoincrement())
-  url       String   @unique
-  alt       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Movie     Movie[]
-}
+// model Cover {
+//   id        Int      @id @default(autoincrement())
+//   url       String   @unique
+//   alt       String?
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   Movie     Movie[]
+// }
 
 model Movie {
   id              Int               @id @default(autoincrement())
@@ -27,13 +27,11 @@ model Movie {
   releaseDate     DateTime?
   runtime         Int?
   overview        String?
-  year            Int?
   budget          Int?
   revenue         Int?
-  coverId         Int
+  cover           String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  cover           Cover             @relation(fields: [coverId], references: [id])
   MovieActor      MovieActor[]
   MovieCrewMember MovieCrewMember[]
   MovieDirector   MovieDirector[]
