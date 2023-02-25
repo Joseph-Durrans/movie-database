@@ -7,9 +7,14 @@ generator erd {
   theme    = "neutral"
 }
 
+// datasource db {
+//   provider = "sqlite"
+//   url      = "file:./dev.sqlite"
+// }
+
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.sqlite"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // model Cover {
@@ -22,20 +27,22 @@ datasource db {
 // }
 
 model Movie {
-  id              Int               @id @default(autoincrement())
-  title           String
-  releaseDate     DateTime?
-  runtime         Int?
-  overview        String?
-  budget          Int?
-  revenue         Int?
-  cover           String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  MovieActor      MovieActor[]
-  MovieCrewMember MovieCrewMember[]
-  MovieDirector   MovieDirector[]
-  MovieGenre      MovieGenre[]
+  id          Int          @id @default(autoincrement())
+  title       String
+  overview    String?
+  posterPath  String?
+  runtime     Int?
+  budget      BigInt?
+  revenue     BigInt?
+  releaseDate DateTime?
+  voteAverage Float?
+  voteCount   Int?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  movieGenre  MovieGenre[]
+  //   MovieActor      MovieActor[]
+  //   MovieCrewMember MovieCrewMember[]
+  //   MovieDirector   MovieDirector[]
 }
 
 model Genre {
@@ -43,73 +50,73 @@ model Genre {
   name       String       @unique
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
-  MovieGenre MovieGenre[]
+  movieGenre MovieGenre[]
 }
 
 model MovieGenre {
   movieId   Int
+  movie     Movie    @relation(fields: [movieId], references: [id])
   genreId   Int
+  genre     Genre    @relation(fields: [genreId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  genre     Genre    @relation(fields: [genreId], references: [id])
-  movie     Movie    @relation(fields: [movieId], references: [id])
 
   @@id([movieId, genreId])
 }
 
-model Actor {
-  id         Int          @id @default(autoincrement())
-  name       String       @unique
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  MovieActor MovieActor[]
-}
+// model Actor {
+//   id         Int          @id @default(autoincrement())
+//   name       String       @unique
+//   createdAt  DateTime     @default(now())
+//   updatedAt  DateTime     @updatedAt
+//   MovieActor MovieActor[]
+// }
 
-model MovieActor {
-  movieId   Int
-  actorId   Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  actor     Actor    @relation(fields: [actorId], references: [id])
-  movie     Movie    @relation(fields: [movieId], references: [id])
+// model MovieActor {
+//   movieId   Int
+//   actorId   Int
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   actor     Actor    @relation(fields: [actorId], references: [id])
+//   movie     Movie    @relation(fields: [movieId], references: [id])
 
-  @@id([movieId, actorId])
-}
+//   @@id([movieId, actorId])
+// }
 
-model Director {
-  id            Int             @id @default(autoincrement())
-  name          String          @unique
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  MovieDirector MovieDirector[]
-}
+// model Director {
+//   id            Int             @id @default(autoincrement())
+//   name          String          @unique
+//   createdAt     DateTime        @default(now())
+//   updatedAt     DateTime        @updatedAt
+//   MovieDirector MovieDirector[]
+// }
 
-model MovieDirector {
-  movieId    Int
-  directorId Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  director   Director @relation(fields: [directorId], references: [id])
-  movie      Movie    @relation(fields: [movieId], references: [id])
+// model MovieDirector {
+//   movieId    Int
+//   directorId Int
+//   createdAt  DateTime @default(now())
+//   updatedAt  DateTime @updatedAt
+//   director   Director @relation(fields: [directorId], references: [id])
+//   movie      Movie    @relation(fields: [movieId], references: [id])
 
-  @@id([movieId, directorId])
-}
+//   @@id([movieId, directorId])
+// }
 
-model CrewMember {
-  id              Int               @id @default(autoincrement())
-  name            String            @unique
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  MovieCrewMember MovieCrewMember[]
-}
+// model CrewMember {
+//   id              Int               @id @default(autoincrement())
+//   name            String            @unique
+//   createdAt       DateTime          @default(now())
+//   updatedAt       DateTime          @updatedAt
+//   MovieCrewMember MovieCrewMember[]
+// }
 
-model MovieCrewMember {
-  movieId      Int
-  crewMemberId Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  crewMember   CrewMember @relation(fields: [crewMemberId], references: [id])
-  movie        Movie      @relation(fields: [movieId], references: [id])
+// model MovieCrewMember {
+//   movieId      Int
+//   crewMemberId Int
+//   createdAt    DateTime   @default(now())
+//   updatedAt    DateTime   @updatedAt
+//   crewMember   CrewMember @relation(fields: [crewMemberId], references: [id])
+//   movie        Movie      @relation(fields: [movieId], references: [id])
 
-  @@id([movieId, crewMemberId])
-}
+//   @@id([movieId, crewMemberId])
+// }
