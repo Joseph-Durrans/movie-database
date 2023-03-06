@@ -40,14 +40,13 @@ model Movie {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   movieGenre  MovieGenre[]
-  //   MovieActor      MovieActor[]
-  //   MovieCrewMember MovieCrewMember[]
-  //   MovieDirector   MovieDirector[]
+  Cast        Cast[]
+  Crew        Crew[]
 }
 
 model Genre {
   id         Int          @id @default(autoincrement())
-  name       String       @unique
+  name       String
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   movieGenre MovieGenre[]
@@ -62,6 +61,37 @@ model MovieGenre {
   updatedAt DateTime @updatedAt
 
   @@id([movieId, genreId])
+}
+
+model Person {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Crew      Crew[]
+  Cast      Cast[]
+}
+
+model Cast {
+  id        String   @id @default(cuid())
+  personId  Int
+  person    Person   @relation(fields: [personId], references: [id])
+  character String
+  movieId   Int
+  movie     Movie    @relation(fields: [movieId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Crew {
+  id        String   @id @default(cuid())
+  personId  Int
+  person    Person   @relation(fields: [personId], references: [id])
+  job       String
+  movieId   Int
+  movie     Movie    @relation(fields: [movieId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // model Actor {
