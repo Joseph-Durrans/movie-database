@@ -10,3 +10,47 @@
 		/* @apply text-[10px]; */
 	}
 }
+
+.nav-container ul li{
+	padding-left: 40px;
+}
+
+.ham {
+	width: 62px;
+	min-width: 62px;
+	margin-left: 7px;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	transition: transform 400ms;
+
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.hamRotate.active {
+	transform: rotate(45deg);
+}
+.hamRotate180.active {
+	transform: rotate(180deg);
+}
+.line {
+	fill:none;
+	transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+	stroke:#0047ab;
+	stroke-width:2.5;
+	stroke-linecap:round;
+}
+.ham1 .top {
+	stroke-dasharray: 40 139;
+}
+.ham1 .bottom {
+	stroke-dasharray: 40 180;
+}
+.ham1.active .top {
+	stroke-dashoffset: -93px;
+}
+.ham1.active .bottom {
+	stroke-dashoffset: -144px;	
+}
