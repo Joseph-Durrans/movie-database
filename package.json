@@ -20,6 +20,9 @@
 		"autoprefixer": "^10.4.13",
 		"csv-parse": "^5.3.5",
 		"postcss": "^8.4.21",
+		"prettier": "^2.8.4",
+		"prettier-plugin-svelte": "^2.9.0",
+		"prettier-plugin-tailwindcss": "^0.2.4",
 		"prisma": "^4.11.0-dev.54",
 		"prisma-erd-generator": "^1.2.5",
 		"svelte": "^3.54.0",
@@ -28,7 +31,8 @@
 		"ts-node": "^10.9.1",
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.5",
-		"vite": "^4.0.0"
+		"vite": "^4.0.0",
+        "json5": "^2.2.3"
 	},
 	"type": "module",
 	"dependencies": {

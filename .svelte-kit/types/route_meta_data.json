@@ -1,8 +1,6 @@
 {
-	"/": [
-		"src/routes/+page.server.ts"
-	],
-	"/genre": [
-		"src/routes/genre/+page.server.ts"
+	"/": [],
+	"/[pageId]": [
+		"src/routes/[pageId]/+page.server.ts"
 	]
 }
