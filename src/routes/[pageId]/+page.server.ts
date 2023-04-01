@@ -2,48 +2,40 @@ import prisma from "$lib/server/prisma";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-interface CursorPaginationProps {
-	direction?: "next" | "prev";
-	cursor?: number;
+interface OffsetPaginationProps {
+	pageId?: number;
 	count?: number;
 }
 
-const cursorPagination = async ({ direction = "next", cursor = 0, count = 12 }: CursorPaginationProps) => {
+const offsetPagination = async ({ pageId = 0, count = 12 }: OffsetPaginationProps) => {
 	const movies = await prisma.movie.findMany({
-		take: direction == "next" ? count : -count,
-		skip: 1,
-		cursor: {
-			id: cursor,
-		},
+		take: count,
+		skip: pageId * count,
 		orderBy: {
 			id: "asc",
 		},
 	});
 
-	if (movies) {
+	if (movies || movies.length > 0) {
 		return {
 			movies,
-			pageCount: (await prisma.movie.count()) / count,
+			pageId,
+			pageCount: Math.floor((await prisma.movie.count()) / count),
 		};
 	}
-
-	throw error(404, "Not found");
 };
 
 const load: PageServerLoad = async ({ params }: any) => {
-	const firstMovie = await prisma.movie.findFirst({
-		orderBy: {
-			id: "asc",
-		},
-	});
+	const { pageId } = params;
+	console.log("pageId", pageId);
 
-	if (firstMovie) {
-		return {
-			movies: await cursorPagination({ direction: "next", cursor: firstMovie.id, count: 15 }),
-		};
+	const pagination = await offsetPagination({ pageId: +pageId });
+
+	if (pagination) {
+		return pagination;
 	}
 
-	throw error(404, "Not found");
+	throw error(404, "Page Not found");
 };
 
 export { load };

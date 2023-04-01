@@ -1,5 +1,8 @@
 {
 	"/": [],
+	"/movie/[movieId]": [
+		"src/routes/movie/[movieId]/+page.server.ts"
+	],
 	"/[pageId]": [
 		"src/routes/[pageId]/+page.server.ts"
 	]
