@@ -40,8 +40,8 @@ model Movie {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   movieGenre  MovieGenre[]
-  Cast        Cast[]
-  Crew        Crew[]
+  cast        Cast[]
+  crew        Crew[]
 }
 
 model Genre {
@@ -68,8 +68,8 @@ model Person {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Crew      Crew[]
-  Cast      Cast[]
+  crew      Crew[]
+  cast      Cast[]
 }
 
 model Cast {

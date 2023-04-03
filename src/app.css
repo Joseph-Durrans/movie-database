@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+	html {
+		@apply font-mono;
+	}
+
 	body {
-		@apply font-mono text-[62.5%];
+		@apply text-base;
 	}
 
 	h1 {
